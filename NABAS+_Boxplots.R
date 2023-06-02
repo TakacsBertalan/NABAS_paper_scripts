@@ -1,4 +1,4 @@
-# R script to generate the boxplots in the paper: "Accurate alignment-based classification of metagenomic sequences with NABAS+"
+# Generate boxplots
 # Author: Erda Qorri
 # Date: 18-10-2022
 
