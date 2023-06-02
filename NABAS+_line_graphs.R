@@ -1,4 +1,4 @@
-# R script to generate the line graphs in the paper, "NABAS+: Improved Species Classification and Reduction of False Positive Detection in Metagenomic Samples"
+# Generate line graphs
 # Author: Erda Qorri
 # Date: 12-06-2022
 
