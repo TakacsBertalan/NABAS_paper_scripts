@@ -1,7 +1,8 @@
-# R script to generate the FDR and read number boxplots in the paper: "Accurate alignment-based classification of metagenomic sequences with NABAS+"
+# Generate the FDR and read number boxplots
 # Author: Erda Qorri
 # Date: 18-10-2022
 
+# Load libraries ------
 library(tidyverse)
 library(ggplot2)
 library(dplyr)
