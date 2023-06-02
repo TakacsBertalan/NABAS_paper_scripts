@@ -1,5 +1,4 @@
-# Title: Accurate and highly efficient alignment-based classification of metagenomic sequences with NABAS+
-# Script_Info: Extracts citations for the corresponding publications of the classifiers benchmarked in the paper with the title: Accurate and highly efficient alignment-based classification of metagenomic sequences with NABAS+.
+# Script_Info: Extract citations for the corresponding publications of the benchmarked classifiers
 # Author: Erda Qorri
 # Date: 28-02-2023
 
