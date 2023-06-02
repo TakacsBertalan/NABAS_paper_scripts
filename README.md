@@ -1,4 +1,4 @@
-# Source code for NABAS+
+# Code for benchmarking our novel metagenomic classifier, NABAS+
 
 This repository contains code for the project "Accurate and highly efficient alignment-based classification of metagenomic sequences with NABAS+". This is the source code used for statistical analysis, citation extraction, and data visualization.
 The source code for the NABAS+ algorithm is available upon request from the correspoding author (haracska.lajos@brc.hu).
@@ -11,7 +11,4 @@ While the Illumina sequencing results of the Zymo microbial standards are access
 
 #### Contact information
 If you have any questions, please do not hesitate to contact Bertalan Takács at takacs.bertalan@brc.hu.
-
-
-
 
