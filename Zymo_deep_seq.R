@@ -1,4 +1,4 @@
-# R script to generate the stacked barcharts for the deeply sequenced samples in the paper: "Accurate alignment-based classification of metagenomic sequences with NABAS+"
+# Generate the stacked barcharts for the deeply sequenced samples
 # Author: Erda Qorri
 # Date: 06-12-2022
 
