@@ -54,6 +54,49 @@ public class RenameFastas {
         System.out.println("Number of all assemblies read in: " + assemblyHash.size());
         return assemblyHash;
     }
+    
+    private static HashMap<String, RefSeqAssembly> readTSV(File inputFile){
+    HashMap<String, RefSeqAssembly> idHash = new HashMap();
+    
+    SimpleFileReader reader = new SimpleFileReader(inputFile);
+    String line = reader.readLine();
+    System.out.println("Started reading tsv");
+    while (true){
+        if (line == null){
+        reader.close();
+        break;
+        } else {
+        RefSeqAssembly ass = new RefSeqAssembly(line.split("\t")[0]);
+        ass.taxID = line.strip().split("\t")[1];
+        idHash.put(ass.assemblyAccession, ass);
+        line = reader.readLine();
+        }
+    
+    }
+
+        return idHash;
+    }
+
+    static HashMap<String, RefSeqAssembly> selectFilesFromTSV(File inputFolder, HashMap<String, RefSeqAssembly> IDs) {
+        File[] listOfFiles = inputFolder.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return !name.contains(".fai") && (name.contains("fna") || name.contains("fasta"));
+            }
+        });
+        System.out.println("Started selecting files");
+        HashMap<String, RefSeqAssembly> validAssemblies = new HashMap<>();
+        for (File f : listOfFiles) {
+            String accession = f.getName().substring(0, 15);
+            RefSeqAssembly newAssembly = IDs.get(accession);
+            String localtaxID = newAssembly.taxID;
+            if (!validAssemblies.containsKey(localtaxID)) {
+                newAssembly.bestAssembly = f;
+                validAssemblies.put(localtaxID, newAssembly);
+            }
+        }
+        return validAssemblies;
+    }
 
     static HashMap<String, RefSeqAssembly> selectFiles(File inputFolder, HashMap<String, RefSeqAssembly> IDs) throws IOException {
         File[] listOfFiles = inputFolder.listFiles(new FilenameFilter() {
@@ -211,14 +254,23 @@ public class RenameFastas {
             outputFolder = new File(commandLine.getOptionValue("output-folder"));
 
             System.out.println("Collecting RefSeq and NCBI ids");
-
+/*
             HashMap<String, RefSeqAssembly> ids = readAssemblySummary(inputDictionary);
             HashMap <String, RefSeqAssembly> validAssemblies = null;
             try{
             validAssemblies = selectFiles(inputFolder, ids);
             } catch (Exception e) {
                 System.out.println(e);
-        }
+        }*/
+            HashMap<String, RefSeqAssembly> ids = readTSV(inputDictionary);
+            HashMap<String, RefSeqAssembly> validAssemblies = null;
+
+            try {
+                validAssemblies = selectFilesFromTSV(inputFolder, ids);
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+
             if (!commandLine.hasOption("headeronly")) {
 
                 System.out.println("Creating fasta.gz files and header.html");
