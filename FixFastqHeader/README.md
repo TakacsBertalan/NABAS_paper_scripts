@@ -18,4 +18,4 @@ Create a dummy casava 1.8 header to fastq files
  
  -s,--sample <arg>   Sample name
 
-When using CAMISIM generated interleaved files, make sure to use the -IPE switch!
+When using CAMISIM generated interleaved files, make sure to use the -IPE switch! For example input and output files, see the test directory
