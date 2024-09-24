@@ -132,11 +132,10 @@ public class RenameFastas {
 
     }
 
-    static void renameAndCopy(HashMap<String, RefSeqAssembly> IDs, File outputFolder, String outputPrefix, boolean headerOnly) {
+    static void renameAndCopy(HashMap<String, RefSeqAssembly> IDs, File outputFolder, String outputPrefix) {
         long maxBase = (long) 8 * 1000 * 1000 * 1000;
         int part = 1;
         long totalBase = 0;
-        SimpleFileWriter headerWriter = new SimpleFileWriter(outputFolder + "/header.html", SimpleFileReader.FileReaderWriterType.PLAINTEXT);
         SimpleFileWriter outputWriter = new SimpleFileWriter(outputFolder + "/" + outputPrefix + "_1.fa.gz", SimpleFileReader.FileReaderWriterType.GZ, 1024);
         String toPad = pad("", 300, 'N');
         int genomeCounter = 0;
@@ -149,9 +148,8 @@ public class RenameFastas {
 
             String newName = taxid + "_" + assembly.assemblyAccession;
             int fullLength = 0;
-            if (!headerOnly){
             outputWriter.write(">" + newName + "\n");
-            }
+
             
             SimpleFileReader fastaReader = new SimpleFileReader(bestAssembly, SimpleFileReader.FileReaderWriterType.GZ);
             boolean newContig = false;
@@ -161,9 +159,7 @@ public class RenameFastas {
                     fastaReader.close();
                     break;
                 } else if (line.startsWith(">") && newContig) {
-                    if (!headerOnly) {
                         outputWriter.write(toPad);
-                    }
                     totalBase += 300;
                     fullLength += 300;
                     line = fastaReader.readLine();
@@ -173,25 +169,18 @@ public class RenameFastas {
                     line = fastaReader.readLine();
 
                 } else {
-                                if (!headerOnly){
+
                     outputWriter.write(line + "\n");
-                                }
                     totalBase += line.length();
                     fullLength += line.length();
                     line = fastaReader.readLine();
                 }
             }
-            try {
-                headerWriter.writeLn(newName + "\t" + String.valueOf(fullLength));
-            } catch (Exception e) {
-                System.out.println("ERROR WRITING THE HEADER FILE");
-                System.out.println(newName + "\t" + String.valueOf(fullLength));
-                System.out.println(e);
-            }
+            
             if (genomeCounter % 10 == 0) {
                 System.out.println("Done with " + String.valueOf(round((double) genomeCounter / IDs.size() * 100, 2)) + "% of the genome files");
             }
-            if (totalBase > maxBase && !headerOnly) {
+            if (totalBase > maxBase) {
                 fileCounter++;
                 totalBase = 0;
                 outputWriter.close();
@@ -201,7 +190,6 @@ public class RenameFastas {
             }
         }
         outputWriter.close();
-        headerWriter.close();
         System.out.println("Number of files: " + String.valueOf(fileCounter + 1));
     }
     
@@ -233,8 +221,7 @@ public class RenameFastas {
         options.addOption("d", "input-dictionary", true, "Tab separated file containing the refseq assembly and ncbi tax ids [required]");
         options.addOption("o", "output-folder", true, "Output folder [required]");
         options.addOption("p", "output-prefix", true, "Output file prefix. Optional. Default: NABAS_database");
-        options.addOption("headeronly", "Create only the header.html file, without writing the fastas");
-
+        
         String header = "This program expects the fasta files in the input folder as gzipped and having the RefSeq assembly id as filename\n\n";
         String footer = "\nPlease report issues at the github repository of this project https://github.com/TakacsBertalan/NABAS_paper_scripts";
 
@@ -271,21 +258,11 @@ public class RenameFastas {
                 System.out.println(e);
             }
 
-            if (!commandLine.hasOption("headeronly")) {
-
-                System.out.println("Creating fasta.gz files and header.html");
-                try{
-                    renameAndCopy(validAssemblies, outputFolder, outputPrefix, false);
-                } catch (Exception e){
-                    System.out.println(e);
-                }
-            } else {
-                System.out.println("Creating header.html");
-try{
-                    renameAndCopy(validAssemblies, outputFolder, outputPrefix, true);
-                } catch (Exception e){
-                    System.out.println(e);
-                }
+            System.out.println("Creating fasta.gz files");
+            try {
+                renameAndCopy(validAssemblies, outputFolder, outputPrefix);
+            } catch (Exception e) {
+                System.out.println(e);
             }
         } catch (ParseException e) {
             e.printStackTrace();
@@ -293,5 +270,5 @@ try{
         long timestampEnd = System.currentTimeMillis() / 1000;
         System.out.println("Elapsed time in minutes: " + String.valueOf((timestampEnd - timestampStart) / 60));
     }
-    
+
 }

@@ -1,269 +1,321 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+
+
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
+import java.util.zip.GZIPInputStream;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+
+
 /**
  *
- * @author Takács Bertalan
+ * @author Gábor Jaksa
  */
-import java.io.*;
-import java.io.IOException;
-import java.util.HashMap;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.HelpFormatter;
+public final class SimpleFileReader {
 
+    FileChannel myFileChannel;
+    BufferedReader myBufferedReader;
+    private boolean isinterrupted = false;
+    private int procent = 0;
+    boolean updateable = false;
+    private long size;
+    boolean closed = false;
+    String file;
+    ObjectInputStream objectReader;
 
-public class RenameFastas {
-    
-    private static HashMap<String, RefSeqAssembly> readAssemblySummary(File inputFile) {
-        HashMap<String, RefSeqAssembly> assemblyHash = new HashMap();
-        SimpleFileReader reader = new SimpleFileReader(inputFile, SimpleFileReader.FileReaderWriterType.PLAINTEXT);
-        LocalDate seqRelDate;
-        String line = reader.readLine();
-        while (true) {
-            if (line == null) {
-                reader.close();
-                break;
-            } else if (line.startsWith("#")) {
-                line = reader.readLine();
-            } else {
-                RefSeqAssembly ass = new RefSeqAssembly(line.split("\t")[0]);
-                ass.versionStatus = line.split("\t")[10];
-                ass.assemblyLevel = line.split("\t")[11];
-                ass.refseqCategory = line.split("\t")[4];
-                ass.taxID = line.split("\t")[6];
-                try {
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-                    seqRelDate = LocalDate.parse(line.split("\t")[14], formatter);
-                    ass.seqRelDate = seqRelDate;
-                } catch (Exception e) {
-                    System.out.println(e);
-                    break;
-                }
-                assemblyHash.put(ass.assemblyAccession, ass);
-                line = reader.readLine();
-            }
-        }
-        System.out.println("Number of all assemblies read in: " + assemblyHash.size());
-        return assemblyHash;
-    }
-    
-    private static HashMap<String, RefSeqAssembly> readTSV(File inputFile){
-    HashMap<String, RefSeqAssembly> idHash = new HashMap();
-    
-    SimpleFileReader reader = new SimpleFileReader(inputFile);
-    String line = reader.readLine();
-    System.out.println("Started reading tsv");
-    while (true){
-        if (line == null){
-        reader.close();
-        break;
-        } else {
-        RefSeqAssembly ass = new RefSeqAssembly(line.split("\t")[0]);
-        ass.taxID = line.strip().split("\t")[1];
-        idHash.put(ass.assemblyAccession, ass);
-        line = reader.readLine();
-        }
-    
+    public enum FileReaderWriterType {
+        GZ, BZ2, PLAINTEXT, OBJECT;
     }
 
-        return idHash;
+    public SimpleFileReader(InputStream input) {
+        this(false, input);
     }
 
-    static HashMap<String, RefSeqAssembly> selectFilesFromTSV(File inputFolder, HashMap<String, RefSeqAssembly> IDs) {
-        File[] listOfFiles = inputFolder.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return !name.contains(".fai") && (name.contains("fna") || name.contains("fasta"));
-            }
-        });
-        System.out.println("Started selecting files");
-        HashMap<String, RefSeqAssembly> validAssemblies = new HashMap<>();
-        for (File f : listOfFiles) {
-            String accession = f.getName().substring(0, 15);
-            RefSeqAssembly newAssembly = IDs.get(accession);
-            String localtaxID = newAssembly.taxID;
-            if (!validAssemblies.containsKey(localtaxID)) {
-                newAssembly.bestAssembly = f;
-                validAssemblies.put(localtaxID, newAssembly);
-            }
-        }
-        return validAssemblies;
-    }
-
-    static HashMap<String, RefSeqAssembly> selectFiles(File inputFolder, HashMap<String, RefSeqAssembly> IDs) throws IOException {
-        File[] listOfFiles = inputFolder.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return !name.contains(".fai");
-            }
-        });
-        HashMap<String, RefSeqAssembly> validAssemblies = new HashMap<>();
-        for (File f : listOfFiles) {
-            String accession = f.getName().substring(0, 15);
-            RefSeqAssembly newAssembly = IDs.get(accession);
-            String localtaxID = newAssembly.taxID;
-            if (!validAssemblies.containsKey(localtaxID)) {
-                newAssembly.bestAssembly = f;
-                validAssemblies.put(localtaxID, newAssembly);
-            } else {
-                RefSeqAssembly oldAssembly = validAssemblies.get(localtaxID);
-                if (newAssembly.seqRelDate.isAfter(oldAssembly.seqRelDate) && newAssembly.seqRelDate.isBefore(LocalDate.parse("2019-01-08")) && !newAssembly.versionStatus.equals("suppressed")) {
-                    newAssembly.bestAssembly = f;
-                    validAssemblies.put(newAssembly.taxID, newAssembly);
-                }
-            }
-            if (localtaxID.equals("1642646")){
-                System.out.println(validAssemblies.get(localtaxID));
-            }
-
-        }
-        System.out.println("Number of valid assemblies:");
-        System.out.println(validAssemblies.size());
-
-        return validAssemblies;
-
-    }
-
-    static void renameAndCopy(HashMap<String, RefSeqAssembly> IDs, File outputFolder, String outputPrefix) {
-        long maxBase = (long) 8 * 1000 * 1000 * 1000;
-        int part = 1;
-        long totalBase = 0;
-        SimpleFileWriter outputWriter = new SimpleFileWriter(outputFolder + "/" + outputPrefix + "_1.fa.gz", SimpleFileReader.FileReaderWriterType.GZ, 1024);
-        String toPad = pad("", 300, 'N');
-        int genomeCounter = 0;
-        int fileCounter = 0;
-
-        for (RefSeqAssembly assembly : IDs.values()) {
-            String taxid = assembly.taxID;
-            File bestAssembly = assembly.bestAssembly;
-            genomeCounter++;
-
-            String newName = taxid + "_" + assembly.assemblyAccession;
-            int fullLength = 0;
-            outputWriter.write(">" + newName + "\n");
-
-            
-            SimpleFileReader fastaReader = new SimpleFileReader(bestAssembly, SimpleFileReader.FileReaderWriterType.GZ);
-            boolean newContig = false;
-            String line = fastaReader.readLine();
-            while (true) {
-                if (line == null) {
-                    fastaReader.close();
-                    break;
-                } else if (line.startsWith(">") && newContig) {
-                        outputWriter.write(toPad);
-                    totalBase += 300;
-                    fullLength += 300;
-                    line = fastaReader.readLine();
-
-                } else if (line.startsWith(">") && !newContig) {
-                    newContig = true;
-                    line = fastaReader.readLine();
-
-                } else {
-
-                    outputWriter.write(line + "\n");
-                    totalBase += line.length();
-                    fullLength += line.length();
-                    line = fastaReader.readLine();
-                }
-            }
-            
-            if (genomeCounter % 10 == 0) {
-                System.out.println("Done with " + String.valueOf(round((double) genomeCounter / IDs.size() * 100, 2)) + "% of the genome files");
-            }
-            if (totalBase > maxBase) {
-                fileCounter++;
-                totalBase = 0;
-                outputWriter.close();
-                part++;
-                outputWriter = new SimpleFileWriter(outputFolder + "/" + outputPrefix + "_" + part + ".fa.gz", SimpleFileReader.FileReaderWriterType.GZ);
-                totalBase = 0;
-            }
-        }
-        outputWriter.close();
-        System.out.println("Number of files: " + String.valueOf(fileCounter + 1));
-    }
-    
-
-    
-    public static String pad(String mit, int mennyire, char mivel) {
-        String vissza = mit;
-        while (vissza.length() < mennyire) {
-            vissza += mivel;
-        }
-        return vissza;
-    }
-
-    public static double round(double value, int scale) {
-        return Math.round(value * Math.pow(10, scale)) / Math.pow(10, scale);
-    }
-
-    public static void main(String[] args) {
-        long timestampStart = System.currentTimeMillis() / 1000;
-        Options options = new Options();
-        CommandLineParser parser = new DefaultParser();
-        File inputDictionary;
-        File inputFolder;
-        File outputFolder;
-        String outputPrefix = "NABAS_database";
-
-        options.addOption("h", "help", false, "Display this message");
-        options.addOption("i", "input-folder", true, "Location of the folder containing the input fasta.gz files [required]");
-        options.addOption("d", "input-dictionary", true, "Tab separated file containing the refseq assembly and ncbi tax ids [required]");
-        options.addOption("o", "output-folder", true, "Output folder [required]");
-        options.addOption("p", "output-prefix", true, "Output file prefix. Optional. Default: NABAS_database");
-        
-        String header = "This program expects the fasta files in the input folder as gzipped and having the RefSeq assembly id as filename\n\n";
-        String footer = "\nPlease report issues at the github repository of this project https://github.com/TakacsBertalan/NABAS_paper_scripts";
-
+    //zipReader = new GZIPInputStream(myInputStream);
+    public SimpleFileReader(boolean gz, InputStream input) {
         try {
-            CommandLine commandLine = parser.parse(options, args);
-
-            if (commandLine.hasOption("h")) {
-                HelpFormatter formatter = new HelpFormatter();
-                formatter.printHelp("NABASCreateDatabase", header, options, footer, true);
-                //formatter.printHelp("NABASCreateDatabase", options);
-                return;
-            } else if (commandLine.hasOption("p")) {
-                outputPrefix = commandLine.getOptionValue("output-prefix");
-            }
-            inputFolder = new File(commandLine.getOptionValue("input-folder"));
-            inputDictionary = new File(commandLine.getOptionValue("input-dictionary"));
-            outputFolder = new File(commandLine.getOptionValue("output-folder"));
-
-            System.out.println("Collecting RefSeq and NCBI ids");
-/*
-            HashMap<String, RefSeqAssembly> ids = readAssemblySummary(inputDictionary);
-            HashMap <String, RefSeqAssembly> validAssemblies = null;
-            try{
-            validAssemblies = selectFiles(inputFolder, ids);
-            } catch (Exception e) {
-                System.out.println(e);
-        }*/
-            HashMap<String, RefSeqAssembly> ids = readTSV(inputDictionary);
-            HashMap<String, RefSeqAssembly> validAssemblies = null;
-
-            try {
-                validAssemblies = selectFilesFromTSV(inputFolder, ids);
-            } catch (Exception e) {
-                System.out.println(e);
+            if (gz) {
+                GZIPInputStream zipReader = new GZIPInputStream(input);
+                InputStreamReader myInputStreamReader = new InputStreamReader(zipReader, StandardCharsets.UTF_8);
+                myBufferedReader = new BufferedReader(myInputStreamReader);
+            } else {
+                InputStreamReader myInputStreamReader = new InputStreamReader(input, StandardCharsets.UTF_8);
+                myBufferedReader = new BufferedReader(myInputStreamReader);
             }
 
-            System.out.println("Creating fasta.gz files");
-            try {
-                renameAndCopy(validAssemblies, outputFolder, outputPrefix);
-            } catch (Exception e) {
-                System.out.println(e);
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+            System.out.println("inputstream: " + ex.getMessage());
         }
-        long timestampEnd = System.currentTimeMillis() / 1000;
-        System.out.println("Elapsed time in minutes: " + String.valueOf((timestampEnd - timestampStart) / 60));
     }
 
+    public SimpleFileReader(InputStream input, boolean jar) {
+        try {
+            InputStreamReader myInputStreamReader = new InputStreamReader(input);
+            myBufferedReader = new BufferedReader(myInputStreamReader);
+        } catch (Exception ex) {
+            System.out.println("inputstream: " + ex.getMessage());
+        }
+    }
+
+    public SimpleFileReader(File file, FileReaderWriterType type) {
+        init(file.getPath(), type);
+    }
+
+    public SimpleFileReader(String file, FileReaderWriterType type) {
+        init(file, type);
+    }
+
+    public SimpleFileReader(String file) {
+        init(file);
+    }
+
+    public SimpleFileReader(File file) {
+        init(file.getPath());
+    }
+
+    public void interrupt() {
+        isinterrupted = true;
+    }
+
+    public boolean isInterrupted() {
+        return isinterrupted;
+    }
+
+    public void compress(boolean delete) {
+        String f = file;
+        System.out.println("file is: " + f);
+        String ext = f.substring(f.lastIndexOf("."));
+        String name = f.substring(0, f.lastIndexOf("."));
+        System.out.println(name + ext + ".gz");
+        SimpleFileWriter w = new SimpleFileWriter(name + ext + ".gz", SimpleFileReader.FileReaderWriterType.GZ);
+
+        while (true) {
+            String line = readLine();
+            if (line == null) {
+                close();
+                w.close();
+                break;
+            }
+            w.writeLn(line);
+        }
+    }
+
+    public boolean isUpdateable() {
+        return updateable;
+    }
+
+    public boolean isOpen() {
+        return myFileChannel.isOpen();
+    }
+
+    public void setUnUpdateable() {
+        updateable = false;
+    }
+
+    public String getFile() {
+        return file;
+    }
+
+    public int getProcent() {
+        return procent - 1;
+    }
+
+    public void init(String file, FileReaderWriterType type) {
+        try {
+            FileInputStream myInputStream;
+            myInputStream = new FileInputStream(new File(file));
+            if (null != type) {
+                switch (type) {
+                    case BZ2:
+                        bz2(myInputStream);
+                        break;
+                    case GZ:
+                        gzip(myInputStream);
+                        break;
+                    case OBJECT:
+                        object(myInputStream);
+                        break;
+                    default:
+                        plainText(myInputStream);
+                        break;
+                }
+            }
+            myFileChannel = myInputStream.getChannel();
+            size = getChannelSize();
+            this.file = file;
+        } catch (FileNotFoundException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    public void init(String file) {
+        try {
+            FileInputStream myInputStream;
+            myInputStream = new FileInputStream(new File(file));
+            if (file.endsWith(".bz2")) {
+                bz2(myInputStream);
+            } else if (file.endsWith(".gz")) {
+                gzip(myInputStream);
+            } else if (file.endsWith(".bgzf")) {
+                gzip(myInputStream);
+            } else {
+                plainText(myInputStream);
+            }
+            myFileChannel = myInputStream.getChannel();
+            size = getChannelSize();
+            this.file = file;
+        } catch (FileNotFoundException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    public void plainText(FileInputStream myInputStream) {
+        InputStreamReader myInputStreamReader;
+        myInputStreamReader = new InputStreamReader(myInputStream, StandardCharsets.UTF_8);
+        myBufferedReader = new BufferedReader(myInputStreamReader);
+    }
+
+    public void bz2(FileInputStream myInputStream) {
+        BZip2CompressorInputStream bzIn;
+        try {
+            InputStreamReader myInputStreamReader;
+            bzIn = new BZip2CompressorInputStream(myInputStream);
+            myInputStreamReader = new InputStreamReader(bzIn, StandardCharsets.UTF_8);
+            myBufferedReader = new BufferedReader(myInputStreamReader);
+        } catch (IOException ex) {
+            System.out.println("bz2: " + ex.getMessage());
+        }
+    }
+
+    public String[] getOneReadAsString() {
+        String[] ret = new String[4];
+        String check = readLine();
+        if (check == null) {
+            return null;
+        }
+        ret[0] = check;
+        ret[1] = readLine();
+        ret[2] = readLine();
+        ret[3] = readLine();
+        return ret;
+    }
+
+    public void gzip(FileInputStream myInputStream) {
+        GZIPInputStream zipReader;
+        try {
+            InputStreamReader myInputStreamReader;
+            zipReader = new GZIPInputStream(myInputStream);
+            myInputStreamReader = new InputStreamReader(zipReader, StandardCharsets.UTF_8);
+            myBufferedReader = new BufferedReader(myInputStreamReader);
+        } catch (IOException ex) {
+            System.out.println("gzip: " + ex.getMessage());
+        }
+    }
+
+    private void object(FileInputStream myInputStream) {
+        try {
+            objectReader = new ObjectInputStream(new GZIPInputStream(myInputStream));
+        } catch (IOException ex) {
+            System.out.println("object: " + ex.getMessage());
+        }
+    }
+
+    public Object readObject() {
+        try {
+            return objectReader.readObject();
+        } catch (Exception ex) {
+            return null;
+        }
+
+    }
+
+    public void closeObject() {
+        try {
+            objectReader.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void close() {
+        try {
+            if (myBufferedReader != null) {
+                myBufferedReader.close();
+            }
+        } catch (IOException ex) {
+            ex.getMessage();
+        }
+    }
+
+    public long getChannelPosition() {
+        try {
+            return myFileChannel.position();
+        } catch (IOException ex) {
+
+        }
+        return -1;
+    }
+
+    public long getChannelSize() {
+        try {
+            return myFileChannel.size();
+        } catch (IOException ex) {
+            System.out.println("getChannelSize: " + ex.getMessage());
+        }
+        return 0;
+    }
+
+    public String readLineStream() {
+        try {
+            String line = myBufferedReader.readLine();
+            if (line == null) {
+                closed = true;
+                close();
+            }
+            return line;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    public String readLine() {
+        try {
+            long pos = getChannelPosition();
+            if (pos >= procent * size / 100) {
+                updateable = true;
+                procent++;
+            }
+            String line = myBufferedReader.readLine();
+            if (line == null) {
+                closed = true;
+                close();
+            }
+            return line;
+        } catch (Exception ex) {
+            //System.out.println("readLine: " + ex.getMessage());
+        }
+        return null;
+    }
+
+    public boolean isClosed() {
+        return closed;
+    }
+
+    public BufferedReader getReader() {
+        return myBufferedReader;
+    }
 }
+
