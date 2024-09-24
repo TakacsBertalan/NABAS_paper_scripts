@@ -21,15 +21,6 @@ import java.util.ArrayList;
 public class TestAssemblyRead {
 
     public static void main(String[] args) {
-        HashMap<String, RefSeqAssembly> assemblyHash = new HashMap<>();
-        assemblyHash = readAssemblySummary("/home/deltagene/assembly_summary_refseq_merged.txt");
-
-        File inputFolder = new File("/media/deltagene/microbiome_2/CAMI_data/RefSeq_genomic_20190108");
-        try{
-        selectFiles(inputFolder, assemblyHash);
-        } catch (Exception e) {
-        System.out.println(e);
-        }
     }
 
     private static HashMap<String, RefSeqAssembly> readAssemblySummary(String input) {
