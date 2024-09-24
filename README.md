@@ -5,7 +5,9 @@ The source code for the NABAS+ algorithm is available upon request from the corr
 
 ### Data Availability
 (a) The _gastrooral dataset_ retrieved from the 2nd CAMI Challenge can be downloaded from the following link: https://frl.publisso.de/data/frl:6425518. 
-(b) The newly generated sample19 is available on Zenodo, along with the list of reference genomes. https://zenodo.org/uploads/13828312
+
+(b) The newly generated sample19 is available on Zenodo, along with the list of reference genomes. https://zenodo.org/uploads/13828312 
+
 (c) Illumina sequencing results of the Zymo microbial standards are accessible at the European Nucleotide Archive via the ERR2984773 and ERR2935805 accession IDs.
 
 #### Contact information
