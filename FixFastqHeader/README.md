@@ -16,6 +16,6 @@ Create a dummy casava 1.8 header to fastq files
  
  -r2 <arg>           R2 file
  
- -s,--sample <arg>   Sample name
+ -s,--sample <arg>   Sample name (default: "DefaultSampleName")
 
 When using CAMISIM generated interleaved files, make sure to use the -IPE switch! For example input and output files, see the test directory
