@@ -18,5 +18,5 @@ Create a dummy casava 1.8 header to fastq files
  
  -s,--sample <arg>   Sets the name of the output samples (default: "DefaultSampleName")
 
-When using CAMISIM generated interleaved files, make sure to use the -IPE switch! For example input and output files, see the test directory. Output fastq.gz smaples are named the following way:
+When using CAMISIM generated interleaved files, make sure to use the -IPE switch! For example input and output files, see the test directory. Output fastq.gz samples are named the following way:
 sampleName + _S0_L001_R1_001.fastq.gz and sampleName + _S0_L001_R2_001.fastq.gz
