@@ -39,19 +39,6 @@ public class NABASData {
                     break;
                 }
             }
-            /*if(excel.getCell(i, 15).getBooleanCellValue()){
-                try {
-                    Species presentSpecies = new Species(excel.getCellAsString(i, 6),excel.getCellAsString(i, 7), excel.getCell(i, 9).getNumericCellValue()*100);
-                    ArrayList<String> bins = new ArrayList();
-                    presentSpecies.bins = excel.getCellAsString(i, 11).split(", ");
-                    species.put(excel.getCellAsString(i, 7),presentSpecies);
-                } catch (Exception e) {
-                    System.out.println(excel.getRow(i));
-                    System.out.println("ITT VAN A GEBASZ: " + i);
-                    System.out.println(e);
-                    break;
-                }
-            }*/
             
         }
         return filterByBin(species,binNumber);
@@ -105,13 +92,6 @@ public class NABASData {
     
     
         public static void main(String[] args){
-
-    /*
-    for (int i = 0; i < old.keySet().size(); i ++){
-    System.out.println(old.get(old.keySet().));
-    
-    }
-*/
     double aggregatedF1 = 0.0;
     
     double aggregatedTreshhold = 0.;
