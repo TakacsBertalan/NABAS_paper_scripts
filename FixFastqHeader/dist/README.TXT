@@ -1,4 +1,4 @@
-Usage: java -jar dist/FixFastqHeader.jar [-h] [-IPE] [-o ] [-r1 ] [-r2 ] [-s ]
+Usage: java -jar FixFastqHeader.jar [-h] [-IPE] [-o ] [-r1 ] [-r2 ] [-s ]
 
 Create a dummy casava 1.8 header to fastq files
 
