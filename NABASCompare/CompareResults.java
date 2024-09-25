@@ -1,9 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package hu.deltabio.nabas.compare;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import hu.deltabio.nabas.Excel;
@@ -16,7 +10,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
  *
- * @author deltagene
+ * Takács Bertalan
  */
 public class CompareResults {
     static HashMap<String, HashMap<String,Species>> camiSamples = CAMIData.readCAMIFolder("/media/deltagene/microbiome_2/CAMI_data/gastrooral_dir");
