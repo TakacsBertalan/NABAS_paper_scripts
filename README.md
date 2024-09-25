@@ -2,7 +2,7 @@
 
 This repository contains code for the project "Accurate and highly efficient alignment-based classification of metagenomic sequences with NABAS+". This is the source code used for statistical analysis, citation extraction, and data visualization.
 
-This repository also a stand-alone, exacutable version of NABAS+, see under NABASStandAlone.
+This repository also contains a stand-alone, exacutable version of NABAS+, see under NABASStandAlone.
 
 ### Data Availability
 (a) The _gastrooral dataset_ retrieved from the 2nd CAMI Challenge can be downloaded from the following link: https://frl.publisso.de/data/frl:6425518. 
