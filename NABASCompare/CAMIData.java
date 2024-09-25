@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package hu.deltabio.nabas.compare;
 
 import hu.deltabio.core.io.SimpleFileReader;
@@ -13,7 +10,7 @@ import hu.deltabio.nabas.compare.Species;
 
 /**
  *
- * @author deltagene
+ * @author Takács Bertalan
  */
 public class CAMIData {
 
@@ -60,9 +57,5 @@ public class CAMIData {
     return camiHash;
     }
     
-    public static void main(String[] args){
-    HashMap<String,Species> sample = readCAMISample(new File("/media/deltagene/microbiome_2/CAMI_data/gastrooral_dir/taxonomic_profile_4.txt"));
-    System.out.println(sample);
-    }
     
 }
