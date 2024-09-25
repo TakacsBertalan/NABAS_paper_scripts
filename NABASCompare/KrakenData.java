@@ -5,7 +5,6 @@
 package hu.deltabio.nabas.compare;
 
 import hu.deltabio.core.io.SimpleFileReader;
-import static hu.deltabio.nabas.compare.KrakenData.readKrakenSample;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.HashMap;
