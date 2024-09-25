@@ -57,12 +57,6 @@ public class GOTTCHAData {
     
     
     public static void main(String[] args){
-    /*
-        HashMap<String, Species> speciesHash = readGOTTCHASample(new File("/media/data/Nabas_cikk_results/gottcha/cami_gastrooral_paired_end_new/sample5_S0_L001_R2_001.gottcha.tsv"));
-    for (String key : speciesHash.keySet()){
-        System.out.println(key);
-        System.out.println(speciesHash.get(key).relativeAbundance);
-    }*/
     HashMap<String, HashMap<String, Species>> sampleHash = readGOTTCHAFolder("/media/data/Nabas_cikk_results/gottcha/cami_gastrooral_paired_end_new");
     System.out.println(sampleHash.get("sample19"));
     //System.out.println("Shannon");
