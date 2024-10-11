@@ -2,5 +2,7 @@ This folder contains files for testing NABAS+. Small in-silico samples with casa
 
 To run the test data from the root directory:
 
+bwa index test/NABAS_database_1.fa.gz
+
 java -jar dist/NABAS.jar -d test/ -o test/ -r1 test/small_test_sample_in_silico_casava_S0_L001_R1_001.fastq.gz -r2 test/small_test_sample_in_silico_casava_S0_L001_R2_001.fastq.gz
 
