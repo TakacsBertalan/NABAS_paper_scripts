@@ -4,7 +4,7 @@ Create a dummy casava 1.8 header to fastq files
 
 -h,--help Display this message
 
--IPE Interleaved paired end fastq
+-IPE Interleaved paired end fastq (Use this switch for CAMISIM generated samples!)
 
 -o,--out Output folder (ends with file separator)
 
@@ -12,4 +12,4 @@ Create a dummy casava 1.8 header to fastq files
 
 -r2 R2 file
 
--s,--sample Sets the name of the output samples (default: "DefaultSampleName")
+-s,--sample Name of the output samples (default: "DefaultSampleName")
