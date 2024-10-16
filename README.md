@@ -4,8 +4,11 @@ This repository contains code for the project "Accurate and highly efficient ali
 
 ### Scripts in the repository
 This repository contains a stand-alone, exacutable version of NABAS+, see under NABASStandAlone. NABASStandAlone/test contains test input and output files for testing the software.
+
 For de-interleaving CAMI samples and adding a CASAVA-style header, see the FixFastqHeaders project.
+
 Reference database was generated using the NABASCreateDatabase project.
+
 Scripts for comparing the classifier outputs can be found in the NABASCompare folder.
 
 ### Data Availability
