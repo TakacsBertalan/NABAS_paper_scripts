@@ -29,6 +29,10 @@ Scripts for comparing the classifier outputs can be found in the NABASCompare fo
 
 (c) Illumina sequencing results of the Zymo microbial standards are accessible at the European Nucleotide Archive via the ERR2984773 and ERR2935805 accession IDs.
 
+### How to use NABAS+
+
+Prerequisites: Java, samtools, bwa
+
 
 #### Contact information
 If you have any questions, please do not hesitate to contact Bertalan Takács at takacs.bertalan@brc.hu.
