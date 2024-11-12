@@ -1,5 +1,5 @@
 [![DOI](https://zenodo.org/badge/556662190.svg)](https://doi.org/10.5281/zenodo.14097479)
-Shield: [![CC BY-NC 4.0][cc-by-nc-shield]][cc-by-nc]
+[![CC BY-NC 4.0][cc-by-nc-shield]][cc-by-nc]
 
 This work is licensed under a
 [Creative Commons Attribution-NonCommercial 4.0 International License][cc-by-nc].
