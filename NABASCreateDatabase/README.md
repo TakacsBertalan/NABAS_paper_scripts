@@ -1,6 +1,6 @@
 This stand-alone java project contains the scripts used to create the NABAS reference library from a RefSeq genomic collection.
 
-usage: NABASCreateDatabase [-d <arg>] [-h] [-i <arg>] [-o <arg>] [-p
+usage: java -jar dist/NABASCreateDatabase.jar [-d <arg>] [-h] [-i <arg>] [-o <arg>] [-p
        <arg>]
 This program expects the fasta files in the input folder as gzipped and
 having the RefSeq assembly id as filename
