@@ -29,6 +29,8 @@ Prerequisites: [Java](https://www.java.com/en/), [samtools](https://github.com/s
 
 Download the contents of the following Zenodo repository into the test/Taxonomy folder: https://zenodo.org/records/14016582
 
+`bwa index test/NABAS_database_1.fa.gz`
+
 #### Test run
 
 `java -jar dist/NABAS.jar -d test/ -o test/ -r1 test/small_test_sample_in_silico_casava_S0_L001_R1_001.fastq.gz -r2 test/small_test_sample_in_silico_casava_S0_L001_R2_001.fastq.gz`
