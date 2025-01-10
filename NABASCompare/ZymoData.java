@@ -19,48 +19,24 @@ NNNNNNNN         NNNNNNNAAAAAAA                   AAAAAAABBBBBBBBBBBBBBBBBAAAAAA
  */
 package hu.deltabio.nabas.compare;
 
-import java.util.ArrayList;
-
+import hu.deltabio.nabas.Excel;
+import java.util.HashMap;
 /**
  *
  * @author Bertalan Takács
  */
-public class Species {
-    String kingdom;
-    String phylum;
-    String order;
-    String family;
-    String genus;
-    String species;
-    
-    Double relativeAbundance;
-    String[] bins;
-    
-    public Species(String species, Double ra){
-    this.species = species;
-    this.relativeAbundance = ra;
-    }
-    
-    public Species(String genus, String species, double ra){
-    this.genus = genus;
-    this.species = species;
-    this.relativeAbundance = ra;
-    }
-    
-    public ArrayList<String> getLineage(){
-        ArrayList<String> lineage = new ArrayList();
-        lineage.add(this.kingdom);
-        lineage.add(this.phylum);
-        lineage.add(this.order);
-        lineage.add(this.family);
-        lineage.add(this.genus);
-        lineage.add(this.species);
-        return lineage;
+public class ZymoData {
+    public static HashMap<String, HashMap<String,Species>>  readZymoData(String inputFile){
+    Excel excel = new Excel();
+    excel.openExcel(inputFile);
+    HashMap<String,Species> CSI = new HashMap<>();
+    HashMap<String,Species> CSII = new HashMap<>();
+    for (int i = 1; i < excel.getRowNumber(); i++) {
     
     }
-    @Override
-    public String toString() {
-        return this.species + ": " + this.relativeAbundance;
+    HashMap<String, HashMap<String,Species>> output = new HashMap<>();
+    return output;
     }
     
+
 }

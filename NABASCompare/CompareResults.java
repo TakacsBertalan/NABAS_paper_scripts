@@ -1,16 +1,33 @@
+/*                                                                                                                                                  
+NNNNNNNN        NNNNNNNN               AAA               BBBBBBBBBBBBBBBBB               AAA                 SSSSSSSSSSSSSSS                      
+N:::::::N       N::::::N              A:::A              B::::::::::::::::B             A:::A              SS:::::::::::::::S                     
+N::::::::N      N::::::N             A:::::A             B::::::BBBBBB:::::B           A:::::A            S:::::SSSSSS::::::S                     
+N:::::::::N     N::::::N            A:::::::A            BB:::::B     B:::::B         A:::::::A           S:::::S     SSSSSSS       +++++++       
+N::::::::::N    N::::::N           A:::::::::A             B::::B     B:::::B        A:::::::::A          S:::::S                   +:::::+       
+N:::::::::::N   N::::::N          A:::::A:::::A            B::::B     B:::::B       A:::::A:::::A         S:::::S                   +:::::+       
+N:::::::N::::N  N::::::N         A:::::A A:::::A           B::::BBBBBB:::::B       A:::::A A:::::A         S::::SSSS          +++++++:::::+++++++ 
+N::::::N N::::N N::::::N        A:::::A   A:::::A          B:::::::::::::BB       A:::::A   A:::::A         SS::::::SSSSS     +:::::::::::::::::+ 
+N::::::N  N::::N:::::::N       A:::::A     A:::::A         B::::BBBBBB:::::B     A:::::A     A:::::A          SSS::::::::SS   +:::::::::::::::::+ 
+N::::::N   N:::::::::::N      A:::::AAAAAAAAA:::::A        B::::B     B:::::B   A:::::AAAAAAAAA:::::A            SSSSSS::::S  +++++++:::::+++++++ 
+N::::::N    N::::::::::N     A:::::::::::::::::::::A       B::::B     B:::::B  A:::::::::::::::::::::A                S:::::S       +:::::+       
+N::::::N     N:::::::::N    A:::::AAAAAAAAAAAAA:::::A      B::::B     B:::::B A:::::AAAAAAAAAAAAA:::::A               S:::::S       +:::::+       
+N::::::N      N::::::::N   A:::::A             A:::::A   BB:::::BBBBBB::::::BA:::::A             A:::::A  SSSSSSS     S:::::S       +++++++       
+N::::::N       N:::::::N  A:::::A               A:::::A  B:::::::::::::::::BA:::::A               A:::::A S::::::SSSSSS:::::S                     
+N::::::N        N::::::N A:::::A                 A:::::A B::::::::::::::::BA:::::A                 A:::::AS:::::::::::::::SS                      
+NNNNNNNN         NNNNNNNAAAAAAA                   AAAAAAABBBBBBBBBBBBBBBBBAAAAAAA                   AAAAAAASSSSSSSSSSSSSSS                        
+                                             developed by Gábor Jaksa and Bertalan Takács
+ */
+package hu.deltabio.nabas.compare;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import hu.deltabio.nabas.Excel;
-import java.io.File;
-import java.io.FileInputStream;
-import java.util.Arrays;
 import java.util.Iterator;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 
 /**
  *
- * Takács Bertalan
+ * @author Bertalan Takács
  */
 public class CompareResults {
     static HashMap<String, HashMap<String,Species>> camiSamples = CAMIData.readCAMIFolder("/media/deltagene/microbiome_2/CAMI_data/gastrooral_dir");
@@ -19,14 +36,16 @@ public class CompareResults {
         return camiSamples;
     }
     
-    public static void main(String[] args){
+    public static void main(String[] args){ 
+        /*
         HashMap<String, HashMap<String,Species>> nabasSamples = NABASData.readNABASFolder("/media/deltagene/microbiome_2/NABAS_new_db");
         //HashMap<String, HashMap<String,Species>> camiSamples = CAMIData.readCAMIFolder("/media/deltagene/microbiome_2/CAMI_data/gastrooral_dir");
         HashMap<String, HashMap<String, Species>> krakenSamples = KrakenData.readKrakenFolder("/media/deltagene/microbiome_2/CAMI_results/kraken2/");
-        HashMap<String, HashMap<String, Species>> metaphlanSamples = MetaphlanData.readMetaphlanFolder("/media/deltagene/microbiome_2/CAMI_results/metaphlan3");
-        HashMap<String, HashMap<String, Species>> gottchaSamples = GOTTCHAData.readGOTTCHAFolder("/media/deltagene/microbiome_2/CAMI_results/gottcha");
+        HashMap<String, HashMap<String, Species>> metaphlanSamples = MetaphlanData.readMetaphlanFolder("/media/deltagene/microbiome_2/CAMI_results/metaphlan3/");
+        HashMap<String, HashMap<String, Species>> gottchaSamples = GOTTCHAData.readGOTTCHAFolder("/media/deltagene/microbiome_2/CAMI_results/gottcha/");
         System.out.println("NABAS+");
         System.out.println(nabasSamples.keySet());
+        System.out.println(nabasSamples.get("sample19"));
         System.out.println("Kraken2");
         System.out.println(krakenSamples.keySet());
         System.out.println("Metaphlan3");
@@ -64,10 +83,18 @@ public class CompareResults {
             }}
         System.out.println("Average Bray-Curtis distance: ");
         System.out.println(sum/counter);
-        */
+        
         //Excel excel = new Excel("/media/deltagene/microbiome_2/CAMI_results/filter_test_bin_5_hr_23.xlsx");
-        Excel excel = new Excel("/media/deltagene/microbiome_2/CAMI_results/CAMI_results_with_gottcha_09_25_new_pr.xlsx");
+        String[] samples = new String[camiSamples.keySet().size()];
+        int i = 0;
+        for (String key : camiSamples.keySet()){
+            samples[i++] = key;
+        
+        }
+        
+        Excel excel = new Excel("/media/deltagene/microbiome_2/CAMI_results/comparison_with_gottcha_old_sample19_10_11.xlsx");
         excel.save();
+        
         excel.createOrOpenWorkSheet("Diversity metrics");
         excel.addCell(0, 0, "sample name");
         excel.addCell(0, 1, "classifier");
@@ -78,18 +105,20 @@ public class CompareResults {
         excel.addCell(0, 6, "Recall");
         excel.addCell(0, 7, "F1 Score");
         excel.addCell(0, 8, "AUPRC");
+        excel.addCell(0, 9, "False Positives");
+        excel.addCell(0,10,"Number of ground truth");
         String[] sampleSet = camiSamples.keySet().toArray(new String[camiSamples.keySet().size()]);
         Arrays.sort(sampleSet);
-        writeToExcel("NABAS+", nabasSamples, sampleSet, excel);
-        writeToExcel("Kraken2", krakenSamples, sampleSet, excel);
-        writeToExcel("MetaPhlAn3", metaphlanSamples, sampleSet, excel);
-        writeToExcel("GOTTCHA", gottchaSamples, sampleSet, excel);
-        excel.createOrOpenWorkSheet("Missing from NABAS");
+        writeToExcel("NABAS+", nabasSamples, samples, excel);
+        writeToExcel("Kraken2", krakenSamples, samples, excel);
+        writeToExcel("MetaPhlAn3", metaphlanSamples, samples, excel);
+        writeToExcel("GOTTCHA", gottchaSamples, samples, excel);
+/*         excel.createOrOpenWorkSheet("Missing from NABAS");
         excel.addCell(0, 0, "sample name");
         excel.addCell(0,1,"Species is in reference but not found by classifier");
         excel.addCell(0,2,"Species is not in reference but found by classifier");
         excel.addCell(0,3,"Genus is in reference but not found by classifier");
-        findMissingSpecies(nabasSamples, sampleSet, excel);
+       findMissingSpecies(nabasSamples, sampleSet, excel);
         findMissingGenus(nabasSamples, sampleSet, excel);
         excel.createOrOpenWorkSheet("Missing from Metaphlan");
         excel.addCell(0, 0, "sample name");
@@ -103,7 +132,7 @@ public class CompareResults {
         excel.addCell(0,1,"Species is in reference but not found by classifier");
         excel.addCell(0,2,"Species is not in reference but found by classifier");
         //excel.addCell(0,3,"Genus is in reference but not found by classifier");
-        findMissingSpecies(krakenSamples, sampleSet, excel);
+        //findMissingSpecies(krakenSamples, sampleSet, excel);
         //findMissingGenus(krakenSamples, sampleSet, excel);
         excel.createOrOpenWorkSheet("Missing from GOTTCHA");
         excel.addCell(0, 0, "sample name");
@@ -112,8 +141,50 @@ public class CompareResults {
         findMissingSpecies(nabasSamples, sampleSet, excel);
         
         excel.save();
+        */
+        readNumberComparison();
         }
         
+    public static void readNumberComparison(){
+    HashMap<String, HashMap<String,Species>> nabasSamples = NABASData.readNABASFolder("/media/deltagene/microbiome_2/CAMI_results/subset_results/subset_results_ujra");
+    HashMap<String, HashMap<String, Species>> krakenSamples = KrakenData.readKrakenFolder("/media/deltagene/microbiome_2/CAMI_results/subset_results/kraken2/");
+    HashMap<String, HashMap<String, Species>> metaphlanSamples = MetaphlanData.readMetaphlanFolder("/media/data/Nabas_cikk_results/metaphlan3/CAMI_subsets/");
+    HashMap<String, HashMap<String, Species>> gottchaSamples = GOTTCHAData.readGOTTCHAFolder("/media/data/Nabas_cikk_results/gottcha/cami_subsets/");
+
+    System.out.println(nabasSamples);
+    Excel excel = new Excel("/media/deltagene/microbiome_2/CAMI_results/CAMI_subsets_result_nabas_ujra.xlsx");
+        excel.save();
+        excel.createOrOpenWorkSheet("Diversity metrics");
+        excel.addCell(0, 0, "sample name");
+        excel.addCell(0, 1, "classifier");
+        excel.addCell(0,2, "read number");
+        excel.addCell(0, 3, "species number");
+        excel.addCell(0, 4, "false positives");
+        excel.addCell(0, 5, "precision");
+        writeReadNumbers("NABAS+", nabasSamples, excel);
+        writeReadNumbers("MetaPhlAn3", metaphlanSamples, excel);
+        writeReadNumbers("Kraken2", krakenSamples, excel);
+        writeReadNumbers("GOTTCHA", gottchaSamples, excel);
+    excel.save();
+    }
+    
+    public static void writeReadNumbers(String classifier, HashMap<String, HashMap<String, Species>> samples, Excel excel){
+        int row = excel.getRowNumber();
+        
+        for (String key : samples.keySet()){
+            System.out.println(key);
+            System.out.println(camiSamples.get(key.split("-")[0]));
+            excel.addCell(row, 0, key.split("-")[0]);
+            excel.addCell(row, 1, classifier);
+            excel.addCell(row, 2, key.split("-")[1]);
+            excel.addCell(row,3,samples.get(key).keySet().size());
+            excel.addCell(row,4,calculateFalsePositives(samples.get(key),camiSamples.get(key.split("-")[0]) ));
+            excel.addCell(row,5,calculatePrecision(samples.get(key),camiSamples.get(key.split("-")[0]) ));
+            
+            row ++;
+        }
+        
+    }
     
     public static double calculateBrayCurtis(HashMap<String,Species> firstCommunity, HashMap<String,Species> secondCommunity){
     /*BC = 1- (Cij/(Si + Sj))
@@ -162,7 +233,7 @@ public class CompareResults {
     public static double calculateShannon(HashMap<String, Species> species) {
         //H = -Σpi * ln(pi)
         double shannonDiversity = 0;
-        if (species != null || species.isEmpty()) {
+        if (species == null || species.isEmpty()) {
             System.out.println("NULLA");
             return 0.0;
         } else {
@@ -194,12 +265,16 @@ public class CompareResults {
             excel.addCell(i + startRow, 0, sample);
             excel.addCell(i + startRow, 1, method);
             excel.addCell(i + startRow, 2, calculateShannon(results.get(sample)));
+            System.out.println(sample);
             excel.addCell((i + startRow), 3, calculateBrayCurtis(cami.get(sample), results.get(sample)));
             excel.addCell((i + startRow), 4, calculateJaccard(cami.get(sample), results.get(sample)));
-            excel.addCell((i + startRow), 5, calculatePrecision(cami.get(sample), results.get(sample)));
-            excel.addCell((i + startRow), 6, calculateRecall(cami.get(sample), results.get(sample)));
+            excel.addCell((i + startRow), 5, calculatePrecision(results.get(sample), cami.get(sample)));
+            excel.addCell((i + startRow), 6, calculateRecall(results.get(sample), cami.get(sample)));
             excel.addCell((i + startRow), 8, calculateAUPRC(cami.get(sample), results.get(sample)));
-            excel.addCell((i + startRow), 7, calculateF1Score(cami.get(sample), results.get(sample)));
+            excel.addCell((i + startRow), 7, calculateF1Score(results.get(sample), cami.get(sample)));
+            excel.addCell((i + startRow), 9, calculateFalsePositives(results.get(sample), cami.get(sample)));
+            excel.addCell((i + startRow), 10,cami.get(sample).keySet().size());
+            
 
         }
     }
@@ -216,29 +291,13 @@ public class CompareResults {
             excel.addCell(i + startRow, 2, calculateShannon(results.get(result)));
             excel.addCell((i + startRow), 3, calculateBrayCurtis(cami, results.get(result)));
             excel.addCell((i + startRow), 4, calculateJaccard(cami, results.get(result)));
-            excel.addCell((i + startRow), 5, calculatePrecision(cami, results.get(result)));
-            excel.addCell((i + startRow), 6, calculateRecall(cami, results.get(result)));
+            excel.addCell((i + startRow), 5, calculatePrecision(results.get(result), cami));
+            excel.addCell((i + startRow), 6, calculateRecall(results.get(result), cami));
             excel.addCell((i + startRow), 8, calculateAUPRC(cami, results.get(result)));
-            excel.addCell((i + startRow), 7, calculateF1Score(cami, results.get(result)));
+            excel.addCell((i + startRow), 7, calculateF1Score(results.get(result), cami));
         }
     }
-/*
-    public static void writeToExcel(String method, HashMap<String, HashMap<String, Species>> results, String sample, Excel excel){
-        int startRow = excel.getRowNumber();
-        
-        HashMap<String,Species> cami = getCAMISamples().get(sample);
-            excel.addCell(startRow, 0, sample);
-            excel.addCell(startRow, 1, method);
-            excel.addCell(startRow, 2, calculateShannon(results.get(sample)));
-            excel.addCell(startRow, 3, calculateBrayCurtis(cami, results.get(sample)));
-            excel.addCell(startRow, 4, calculateJaccard(cami, results.get(sample)));
-            excel.addCell( startRow, 5, calculatePrecision(cami, results.get(sample)));
-            excel.addCell( startRow, 6, calculateRecall(cami, results.get(sample)));
-            excel.addCell( startRow, 8, calculateAUPRC(cami, results.get(sample)));
-            excel.addCell( startRow, 7, calculateF1Score(cami, results.get(sample)));
-        }
-    
-    */
+
         public static void findMissingSpecies(HashMap<String, HashMap<String, Species>> results, String[] samples, Excel excel) {
         HashMap<String, ArrayList<String>> missingPerSample = new HashMap();
         HashMap<String, HashMap<String, Species>>reference = CompareResults.camiSamples;
@@ -298,6 +357,20 @@ public class CompareResults {
         }
         return genera;
     }
+        
+    public static double calculateFalsePositives(HashMap<String, Species> input, HashMap<String, Species> reference){
+    ArrayList<String> groundTruth = new ArrayList(reference.keySet());
+        ArrayList<String> found = new ArrayList(input.keySet());
+        double falsePos = 0;
+        for (String s: found){
+        if (!groundTruth.contains(s)){
+            falsePos ++;
+        }
+        }        
+        return falsePos;
+    
+    
+    }
     
      public static double calculatePrecision(HashMap<String, Species> input, HashMap<String, Species> reference){
         ArrayList<String> groundTruth = new ArrayList(reference.keySet());
@@ -322,6 +395,8 @@ public class CompareResults {
         ArrayList<String> falseNegatives = new ArrayList<>();
         
         for (String s: groundTruth){
+            
+            
         if (found.contains(s)){
             truePositives.add(s);
         } else {
@@ -336,41 +411,7 @@ public class CompareResults {
         return (2*prec*recall)/(double)(prec+recall);
     }
     
-    /*
-    public static double calculatePrecision(HashMap<String,Species> reference, HashMap<String,Species> result){
-    //Precision = TruePositives / (TruePositives + FalsePositives)
-    double precision = 0.0;
-    ArrayList<String> inRes = new ArrayList(result.keySet());
-    ArrayList<String> inRef = new ArrayList(reference.keySet());
-    double lenRes = inRes.size();
     
-    inRes.removeAll(inRef);
-    double truePositive = lenRes - inRes.size();
-    precision = truePositive / lenRes;
-    return precision;
-    }
-    
-    public static double calculateRecall(HashMap<String,Species> reference, HashMap<String,Species> result){
-    //Recall = TruePositives / (TruePositives + FalseNegatives)
-    double recall = 0.0;
-    ArrayList<String> inRes = new ArrayList(result.keySet());
-    ArrayList<String> inRef = new ArrayList(reference.keySet());
-    double lenRef = inRef.size();
-    inRef.removeAll(inRes);
-    double truePositive = lenRef - inRef.size();
-    recall = truePositive/lenRef;
-    return recall;
-    }
-    
-    public static double calculateF1Score(HashMap<String,Species> reference, HashMap<String,Species> result){
-    //The F1 score is calculated as the harmonic mean of the precision and recall scores
-    double f1Score = 0.0;
-    double precision = calculatePrecision(reference, result);
-    double recall = calculateRecall(reference, result);
-    f1Score = (2*precision*recall)/(precision + recall);
-    return f1Score;
-    }
-    */
     public static double calculateAUPRC(HashMap<String,Species> reference, HashMap<String,Species> result){
         double auprc = 0.0;
         ArrayList<Double> precisionList = new ArrayList();

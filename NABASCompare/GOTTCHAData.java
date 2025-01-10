@@ -1,4 +1,22 @@
-
+/*                                                                                                                                                  
+NNNNNNNN        NNNNNNNN               AAA               BBBBBBBBBBBBBBBBB               AAA                 SSSSSSSSSSSSSSS                      
+N:::::::N       N::::::N              A:::A              B::::::::::::::::B             A:::A              SS:::::::::::::::S                     
+N::::::::N      N::::::N             A:::::A             B::::::BBBBBB:::::B           A:::::A            S:::::SSSSSS::::::S                     
+N:::::::::N     N::::::N            A:::::::A            BB:::::B     B:::::B         A:::::::A           S:::::S     SSSSSSS       +++++++       
+N::::::::::N    N::::::N           A:::::::::A             B::::B     B:::::B        A:::::::::A          S:::::S                   +:::::+       
+N:::::::::::N   N::::::N          A:::::A:::::A            B::::B     B:::::B       A:::::A:::::A         S:::::S                   +:::::+       
+N:::::::N::::N  N::::::N         A:::::A A:::::A           B::::BBBBBB:::::B       A:::::A A:::::A         S::::SSSS          +++++++:::::+++++++ 
+N::::::N N::::N N::::::N        A:::::A   A:::::A          B:::::::::::::BB       A:::::A   A:::::A         SS::::::SSSSS     +:::::::::::::::::+ 
+N::::::N  N::::N:::::::N       A:::::A     A:::::A         B::::BBBBBB:::::B     A:::::A     A:::::A          SSS::::::::SS   +:::::::::::::::::+ 
+N::::::N   N:::::::::::N      A:::::AAAAAAAAA:::::A        B::::B     B:::::B   A:::::AAAAAAAAA:::::A            SSSSSS::::S  +++++++:::::+++++++ 
+N::::::N    N::::::::::N     A:::::::::::::::::::::A       B::::B     B:::::B  A:::::::::::::::::::::A                S:::::S       +:::::+       
+N::::::N     N:::::::::N    A:::::AAAAAAAAAAAAA:::::A      B::::B     B:::::B A:::::AAAAAAAAAAAAA:::::A               S:::::S       +:::::+       
+N::::::N      N::::::::N   A:::::A             A:::::A   BB:::::BBBBBB::::::BA:::::A             A:::::A  SSSSSSS     S:::::S       +++++++       
+N::::::N       N:::::::N  A:::::A               A:::::A  B:::::::::::::::::BA:::::A               A:::::A S::::::SSSSSS:::::S                     
+N::::::N        N::::::N A:::::A                 A:::::A B::::::::::::::::BA:::::A                 A:::::AS:::::::::::::::SS                      
+NNNNNNNN         NNNNNNNAAAAAAA                   AAAAAAABBBBBBBBBBBBBBBBBAAAAAAA                   AAAAAAASSSSSSSSSSSSSSS                        
+                                             developed by Gábor Jaksa and Bertalan Takács
+ */
 package hu.deltabio.nabas.compare;
 
 import hu.deltabio.core.io.SimpleFileReader;
@@ -8,7 +26,7 @@ import java.util.HashMap;
 
 /**
  *
- * @author Takács Bertalan
+ * @author Bertalan Takács
  */
 public class GOTTCHAData {
     public static HashMap<String,Species> readGOTTCHASample(File input) {
@@ -54,6 +72,12 @@ public class GOTTCHAData {
     
     
     public static void main(String[] args){
+    /*
+        HashMap<String, Species> speciesHash = readGOTTCHASample(new File("/media/data/Nabas_cikk_results/gottcha/cami_gastrooral_paired_end_new/sample5_S0_L001_R2_001.gottcha.tsv"));
+    for (String key : speciesHash.keySet()){
+        System.out.println(key);
+        System.out.println(speciesHash.get(key).relativeAbundance);
+    }*/
     HashMap<String, HashMap<String, Species>> sampleHash = readGOTTCHAFolder("/media/data/Nabas_cikk_results/gottcha/cami_gastrooral_paired_end_new");
     System.out.println(sampleHash.get("sample19"));
     //System.out.println("Shannon");

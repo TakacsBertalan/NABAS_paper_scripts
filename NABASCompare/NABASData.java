@@ -1,3 +1,22 @@
+/*                                                                                                                                                  
+NNNNNNNN        NNNNNNNN               AAA               BBBBBBBBBBBBBBBBB               AAA                 SSSSSSSSSSSSSSS                      
+N:::::::N       N::::::N              A:::A              B::::::::::::::::B             A:::A              SS:::::::::::::::S                     
+N::::::::N      N::::::N             A:::::A             B::::::BBBBBB:::::B           A:::::A            S:::::SSSSSS::::::S                     
+N:::::::::N     N::::::N            A:::::::A            BB:::::B     B:::::B         A:::::::A           S:::::S     SSSSSSS       +++++++       
+N::::::::::N    N::::::N           A:::::::::A             B::::B     B:::::B        A:::::::::A          S:::::S                   +:::::+       
+N:::::::::::N   N::::::N          A:::::A:::::A            B::::B     B:::::B       A:::::A:::::A         S:::::S                   +:::::+       
+N:::::::N::::N  N::::::N         A:::::A A:::::A           B::::BBBBBB:::::B       A:::::A A:::::A         S::::SSSS          +++++++:::::+++++++ 
+N::::::N N::::N N::::::N        A:::::A   A:::::A          B:::::::::::::BB       A:::::A   A:::::A         SS::::::SSSSS     +:::::::::::::::::+ 
+N::::::N  N::::N:::::::N       A:::::A     A:::::A         B::::BBBBBB:::::B     A:::::A     A:::::A          SSS::::::::SS   +:::::::::::::::::+ 
+N::::::N   N:::::::::::N      A:::::AAAAAAAAA:::::A        B::::B     B:::::B   A:::::AAAAAAAAA:::::A            SSSSSS::::S  +++++++:::::+++++++ 
+N::::::N    N::::::::::N     A:::::::::::::::::::::A       B::::B     B:::::B  A:::::::::::::::::::::A                S:::::S       +:::::+       
+N::::::N     N:::::::::N    A:::::AAAAAAAAAAAAA:::::A      B::::B     B:::::B A:::::AAAAAAAAAAAAA:::::A               S:::::S       +:::::+       
+N::::::N      N::::::::N   A:::::A             A:::::A   BB:::::BBBBBB::::::BA:::::A             A:::::A  SSSSSSS     S:::::S       +++++++       
+N::::::N       N:::::::N  A:::::A               A:::::A  B:::::::::::::::::BA:::::A               A:::::A S::::::SSSSSS:::::S                     
+N::::::N        N::::::N A:::::A                 A:::::A B::::::::::::::::BA:::::A                 A:::::AS:::::::::::::::SS                      
+NNNNNNNN         NNNNNNNAAAAAAA                   AAAAAAABBBBBBBBBBBBBBBBBAAAAAAA                   AAAAAAASSSSSSSSSSSSSSS                        
+                                             developed by Gábor Jaksa and Bertalan Takács
+ */
 package hu.deltabio.nabas.compare;
 
 
@@ -9,7 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 /**
  *
- * @author Takács Bertalan
+ * @author Bertalan Takács
  */
 public class NABASData {
     
@@ -29,13 +48,10 @@ public class NABASData {
                     presentSpecies.bins = excel.getCellAsString(i, 11).split(", ");
                     species.put(excel.getCellAsString(i, 7),presentSpecies);
                 } catch (Exception e) {
-                    System.out.println(excel.getRow(i));
-                    System.out.println("ITT VAN A GEBASZ: " + i);
-                    System.out.println(e);
                     break;
                 }
             }
-            
+
         }
         return filterByBin(species,binNumber);
 
@@ -54,7 +70,7 @@ public class NABASData {
         for (File f : nabasSamples) {
             String sampleName = f.getName().split("\\.")[0];
             try{
-            nabasHash.put(sampleName, readNABASSample(f, 1.8, 5));
+            nabasHash.put(sampleName, readNABASSample(f, 1.7, 5));
             } catch (Exception e){
                 System.out.println(e);
                 System.out.println(f);
@@ -63,16 +79,6 @@ public class NABASData {
     return nabasHash;
     }
     
-    public static double calculateShannon(HashMap<String, Species> species){
-        //H = -Σpi * ln(pi)
-        double shannonDiversity = 0;
-        for(String key : species.keySet()){
-            double ra = species.get(key).relativeAbundance;
-            shannonDiversity += (ra*Math.log(ra));
-        }
-        shannonDiversity *= -1;
-        return shannonDiversity;
-    }
     
     public static HashMap<String, Species> filterByBin(HashMap<String, Species> species, int binNumber ){
         HashMap<String, Species> filteredSpecies = new HashMap();
@@ -86,80 +92,5 @@ public class NABASData {
         return filteredSpecies;
     }
     
-    
-        public static void main(String[] args){
-    double aggregatedF1 = 0.0;
-    
-    double aggregatedTreshhold = 0.;
-    double aggregatedBin = 0;
-    for(int i = 0; i < 20; i++){
-        double bestF1Score = 0.0;
-        int bestBin = 0;
-        double bestThreshold = 0.0;
-        for (int j = 0; j < 100; j += 1){
-            for (double k = 0.0; k < 10; k += 0.1){
-    HashMap<String, Species> input = readNABASSample(new File("/media/deltagene/microbiome_2/NABAS_new_db/sample"+ Integer.toString(i) + ".ShotgunResult.xlsx"), k, j);
-    HashMap<String, Species> reference = CAMIData.readCAMISample(new File("/media/deltagene/microbiome_2/CAMI_data/gastrooral_dir/taxonomic_profile_"+Integer.toString(i)+".txt"));
-    //aggregatedF1 += calculateF1Score(input, reference);
-    double F1Score = calculateF1Score(input, reference);
-    if (F1Score > bestF1Score){
-        bestF1Score = F1Score;
-        bestBin = j;
-        bestThreshold = k;
-    }
-    }
-        }
-    System.out.println("SAMPLE" + i);
-    System.out.println(bestF1Score);
-    System.out.println(bestBin);
-    System.out.println(bestThreshold);
-    aggregatedTreshhold += bestThreshold;
-    aggregatedF1 += bestF1Score;
-    aggregatedBin += bestBin;
-    }
 
-    System.out.println("Average F1 score:");
-    System.out.println(aggregatedF1/20.0);
-    System.out.println("Average Treshold");
-    System.out.println(aggregatedTreshhold / 20.0);
-    System.out.println("Average Bin");
-    System.out.println(aggregatedBin / 20.0);
-    }
-    
-    public static double calculatePrecision(HashMap<String, Species> input, HashMap<String, Species> reference){
-        ArrayList<String> groundTruth = new ArrayList(reference.keySet());
-        ArrayList<String> found = new ArrayList(input.keySet());
-        ArrayList<String> truePositives = new ArrayList<>();
-        ArrayList<String> falsePositives = new ArrayList<>();
-        
-        for (String s: found){
-        if (groundTruth.contains(s)){
-            truePositives.add(s);
-        } else {
-            falsePositives.add(s);
-        }
-        }        
-        return truePositives.size()/(double)(truePositives.size() + falsePositives.size());
-}
-    
-    public static double calculateRecall(HashMap<String, Species> input, HashMap<String, Species> reference){
-    ArrayList<String> groundTruth = new ArrayList(reference.keySet());
-        ArrayList<String> found = new ArrayList(input.keySet());
-        ArrayList<String> truePositives = new ArrayList<>();
-        ArrayList<String> falseNegatives = new ArrayList<>();
-        
-        for (String s: groundTruth){
-        if (found.contains(s)){
-            truePositives.add(s);
-        } else {
-            falseNegatives.add(s);
-        }
-        }
-        return truePositives.size()/(double)(truePositives.size() + falseNegatives.size());}
-    
-    public static double calculateF1Score(HashMap<String, Species> input, HashMap<String, Species> reference){
-        double prec = calculatePrecision(input,reference);
-        double recall = calculateRecall(input,reference);
-        return (2*prec*recall)/(double)(prec+recall);
-    }
 }
