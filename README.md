@@ -13,6 +13,7 @@ This work is licensed under a
 # Code for benchmarking our novel metagenomic classifier, NABAS+
 
 This repository contains code for the project "Accurate and highly efficient alignment-based classification of metagenomic sequences with NABAS+". This is the source code used for statistical analysis, and data visualization.
+The paper describing this project is now published and available at https://academic.oup.com/nargab/article/7/3/lqaf092/8185984
 
 ### How to use NABAS+
 
@@ -63,7 +64,11 @@ Scripts for comparing the classifier outputs can be found in the NABASCompare fo
 (c) Illumina sequencing results of the Zymo microbial standards are accessible at the European Nucleotide Archive via the ERR2984773 and ERR2935805 accession IDs.
 
 
+### Citation
 
+If you use NABAS+ or the data shared here in your research, please cite:
+
+Bertalan Takács, Gábor Jaksa, Erda Qorri, Zoltán Gyuris, Lajos Pintér, Lajos Haracska, Advancing metagenomic classification with NABAS+: a novel alignment-based approach, NAR Genomics and Bioinformatics, Volume 7, Issue 3, September 2025, lqaf092, https://doi.org/10.1093/nargab/lqaf092
 
 #### Contact information
 If you have any questions, please do not hesitate to contact Bertalan Takács at takacs.bertalan@brc.hu.
